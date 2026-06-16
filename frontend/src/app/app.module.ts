@@ -8,9 +8,23 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login.component';
 import { RegisterComponent } from './auth/register.component';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { GroupsListComponent } from './features/groups-list.component';
+import { CreateGroupComponent } from './features/create-group.component';
+import { ExpensesListComponent } from './features/expenses-list.component';
+import { CreateExpenseComponent } from './features/create-expense.component';
+import { BalancesComponent } from './features/balances.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, RegisterComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    RegisterComponent,
+    GroupsListComponent,
+    CreateGroupComponent,
+    ExpensesListComponent,
+    CreateExpenseComponent,
+    BalancesComponent
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

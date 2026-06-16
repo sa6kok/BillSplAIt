@@ -8,3 +8,12 @@ exports.getBalances = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getGroupBalances = async (req, res, next) => {
+  try {
+    const balances = await balanceService.getGroupBalances(req.user.userId, req.params.groupId);
+    res.json({ balances });
+  } catch (error) {
+    next(error);
+  }
+};
