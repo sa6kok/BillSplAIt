@@ -19,7 +19,7 @@ import { GroupService } from '../core/group.service';
       <div class="expenses-list">
         <div *ngFor="let expense of expenses" class="expense-card">
           <h3>{{ expense.description }}</h3>
-          <p><strong>💰 ${{ expense.amount }} {{ expense.currency }}</strong></p>
+          <p><strong>💰 {{ expense.amount }} {{ expense.currency }}</strong></p>
           <p><small>👥 Shares: {{ expense.shares?.length || 0 }} people</small></p>
           <div class="group-actions">
             <button (click)="editExpense(expense.id)" class="btn-secondary">✏️ Edit</button>

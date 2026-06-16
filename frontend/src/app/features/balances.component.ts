@@ -16,10 +16,10 @@ import { GroupService } from '../core/group.service';
       <div class="balances-list">
         <div *ngFor="let balance of balances" class="balance-card">
           <h3>{{ getUserName(balance.userId) }}</h3>
-          <p>💰 Total Share: <strong>${{ balance.total }}</strong></p>
-          <p>✅ Amount Paid: <strong>${{ balance.paid }}</strong></p>
+          <p>💰 Total Share: <strong>{{ balance.total }}</strong></p>
+          <p>✅ Amount Paid: <strong>{{ balance.paid }}</strong></p>
           <p [style.color]="balance.due > 0 ? '#f5576c' : '#667eea'">
-            <strong>{{ balance.due > 0 ? '💸 Owes' : '💳 Owed' }}: ${{ Math.abs(balance.due) }}</strong>
+            <strong>{{ balance.due > 0 ? '💸 Owes' : '💳 Owed' }}: {{ Math.abs(balance.due) }}</strong>
           </p>
         </div>
       </div>
@@ -78,7 +78,6 @@ export class BalancesComponent implements OnInit {
   loadGroupAndBalances() {
     if (!this.groupId) return;
 
-    // Load group
     this.groupService.getGroupById(this.groupId).subscribe({
       next: (res) => {
         this.groupName = res.group?.name || '';
@@ -89,7 +88,6 @@ export class BalancesComponent implements OnInit {
       }
     });
 
-    // Load balances
     this.loading = true;
     this.balanceService.getGroupBalances(this.groupId).subscribe({
       next: (res) => {
