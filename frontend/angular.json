@@ -30,5 +30,8 @@
       }
     }
   },
-  "defaultProject": "billsplait-frontend"
+  "defaultProject": "billsplait-frontend",
+  "cli": {
+    "analytics": false
+  }
 }
