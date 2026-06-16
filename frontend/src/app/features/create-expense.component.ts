@@ -28,8 +28,8 @@ import { GroupService } from '../core/group.service';
         <div>
           <h3>Split Among</h3>
           <div *ngFor="let member of members" class="member-share">
-            <label>{{ member.User?.name || member.userId }}</label>
-            <input id="share-{{member.userId}}" name="share-{{member.userId}}" [(ngModel)]="shares[member.userId]" type="number" step="0.01" />
+            <label>{{ member.name || member.User?.name || member.id || member.userId }}</label>
+            <input id="share-{{member.id || member.userId}}" name="share-{{member.id || member.userId}}" [(ngModel)]="shares[member.id || member.userId]" type="number" step="0.01" />
           </div>
         </div>
         <div>
@@ -84,7 +84,8 @@ export class CreateExpenseComponent implements OnInit {
         this.groupName = res.group?.name || '';
         this.members = res.group?.members || [];
         this.members.forEach((member: any) => {
-          this.shares[member.userId] = 0;
+          const id = member.id || member.userId;
+          this.shares[id] = 0;
         });
       },
       error: (err) => {
@@ -96,10 +97,13 @@ export class CreateExpenseComponent implements OnInit {
   onSubmit() {
     if (!this.groupId) return;
 
-    const shareArray = this.members.map((member: any) => ({
-      userId: member.userId,
-      amount: this.shares[member.userId] || 0
-    }));
+    const shareArray = this.members.map((member: any) => {
+      const id = member.id || member.userId;
+      return {
+        userId: id,
+        amount: this.shares[id] || 0
+      };
+    });
 
     this.loading = true;
     this.error = undefined;
