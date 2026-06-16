@@ -7,27 +7,47 @@ import { GroupService } from '../core/group.service';
   selector: 'app-balances',
   template: `
     <div class="balances-container">
-      <h2>Balances for {{ groupName }}</h2>
-      <button (click)="goBack()">Back to Group</button>
-      <div *ngIf="loading">Loading balances...</div>
-      <div *ngIf="error" style="color:red">{{ error }}</div>
+      <div class="page-header">
+        <h2>📊 Balances for {{ groupName }}</h2>
+        <button (click)="goBack()" class="btn-secondary">← Back to Groups</button>
+      </div>
+      <div *ngIf="loading" class="loading">⏳ Loading balances...</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
       <div class="balances-list">
         <div *ngFor="let balance of balances" class="balance-card">
           <h3>{{ getUserName(balance.userId) }}</h3>
-          <p>Total Share: $<span>{{ balance.total }}</span></p>
-          <p>Amount Paid: $<span>{{ balance.paid }}</span></p>
-          <p [style.color]="balance.due > 0 ? 'red' : 'green'">
-            <strong>{{ balance.due > 0 ? 'Owes' : 'Owed' }}: $<span>{{ Math.abs(balance.due) }}</span></strong>
+          <p>💰 Total Share: <strong>${{ balance.total }}</strong></p>
+          <p>✅ Amount Paid: <strong>${{ balance.paid }}</strong></p>
+          <p [style.color]="balance.due > 0 ? '#f5576c' : '#667eea'">
+            <strong>{{ balance.due > 0 ? '💸 Owes' : '💳 Owed' }}: ${{ Math.abs(balance.due) }}</strong>
           </p>
         </div>
+      </div>
+      <div *ngIf="balances.length === 0 && !loading" style="text-align: center; padding: 3rem; color: #999;">
+        <p style="font-size: 1.1rem;">No expenses yet. Create one to see balances.</p>
       </div>
     </div>
   `,
   styles: [`
-    .balances-container { padding: 20px; }
-    .balances-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin-top: 20px; }
-    .balance-card { border: 1px solid #ccc; padding: 15px; border-radius: 4px; }
-    button { margin: 5px; padding: 8px 12px; cursor: pointer; }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-header button {
+        width: 100%;
+      }
+    }
   `]
 })
 export class BalancesComponent implements OnInit {

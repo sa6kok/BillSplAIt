@@ -7,27 +7,61 @@ import { GroupService } from '../core/group.service';
   selector: 'app-expenses-list',
   template: `
     <div class="expenses-container">
-      <h2>Expenses for {{ groupName }}</h2>
-      <button (click)="goBack()">Back to Groups</button>
-      <button (click)="goToCreate()">Add Expense</button>
-      <div *ngIf="loading">Loading expenses...</div>
-      <div *ngIf="error" style="color:red">{{ error }}</div>
+      <div class="page-header">
+        <h2>💸 Expenses for {{ groupName }}</h2>
+        <div>
+          <button (click)="goToCreate()" class="btn-primary">+ Add Expense</button>
+          <button (click)="goBack()" class="btn-secondary">← Back</button>
+        </div>
+      </div>
+      <div *ngIf="loading" class="loading">⏳ Loading expenses...</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
       <div class="expenses-list">
         <div *ngFor="let expense of expenses" class="expense-card">
           <h3>{{ expense.description }}</h3>
-          <p>Amount: $<span>{{ expense.amount }}</span> {{ expense.currency }}</p>
-          <p><small>Shares: {{ expense.shares?.length || 0 }} people</small></p>
-          <button (click)="editExpense(expense.id)">Edit</button>
-          <button (click)="deleteExpense(expense.id)" style="background:red;color:white">Delete</button>
+          <p><strong>💰 ${{ expense.amount }} {{ expense.currency }}</strong></p>
+          <p><small>👥 Shares: {{ expense.shares?.length || 0 }} people</small></p>
+          <div class="group-actions">
+            <button (click)="editExpense(expense.id)" class="btn-secondary">✏️ Edit</button>
+            <button (click)="deleteExpense(expense.id)" class="btn-danger">🗑️ Delete</button>
+          </div>
         </div>
+      </div>
+      <div *ngIf="expenses.length === 0 && !loading" style="text-align: center; padding: 3rem; color: #999;">
+        <p style="font-size: 1.1rem;">No expenses yet.</p>
       </div>
     </div>
   `,
   styles: [`
-    .expenses-container { padding: 20px; }
-    .expenses-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin-top: 20px; }
-    .expense-card { border: 1px solid #ccc; padding: 15px; border-radius: 4px; }
-    button { margin: 5px; padding: 8px 12px; cursor: pointer; }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-header div {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .page-header div {
+        width: 100%;
+      }
+
+      .page-header div button {
+        flex: 1;
+      }
+    }
   `]
 })
 export class ExpensesListComponent implements OnInit {

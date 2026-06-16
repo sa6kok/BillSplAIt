@@ -6,46 +6,91 @@ import { GroupService } from '../core/group.service';
   selector: 'app-groups-list',
   template: `
     <div class="groups-container">
-      <h2>My Groups</h2>
-      <button (click)="goToCreate()">Create New Group</button>
-      <div *ngIf="loading">Loading groups...</div>
-      <div *ngIf="error" style="color:red">{{ error }}</div>
+      <div class="page-header">
+        <h2>My Groups</h2>
+        <button (click)="goToCreate()" class="btn-primary">+ Create New Group</button>
+      </div>
+      <div *ngIf="loading" class="loading">⏳ Loading groups...</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
       <div class="groups-list">
         <div *ngFor="let group of groups" class="group-card">
           <h3>{{ group.name }}</h3>
           <p>{{ group.description }}</p>
-          <p><small>Members: {{ group.members?.length || 0 }}</small></p>
+          <p><small>👥 Members: {{ group.members?.length || 0 }}</small></p>
           <div class="member-add">
             <input
               type="email"
               placeholder="Invite by email"
               [(ngModel)]="memberEmail[group.id]"
             />
-            <button (click)="addMember(group.id)" [disabled]="memberLoading[group.id]">
-              {{ memberLoading[group.id] ? 'Adding...' : 'Add Member' }}
+            <button (click)="addMember(group.id)" [disabled]="memberLoading[group.id]" class="btn-secondary">
+              {{ memberLoading[group.id] ? 'Adding...' : 'Add' }}
             </button>
-            <div *ngIf="memberError[group.id]" class="error">{{ memberError[group.id] }}</div>
+            <div *ngIf="memberError[group.id]" class="error" style="flex-basis: 100%; margin: 0;">{{ memberError[group.id] }}</div>
           </div>
           <div class="group-actions">
-            <button (click)="viewExpenses(group.id)">Expenses</button>
-            <button (click)="viewBalances(group.id)">Balances</button>
-            <button (click)="editGroup(group.id)">Edit</button>
-            <button (click)="deleteGroup(group.id)" style="background:red;color:white">Delete</button>
+            <button (click)="viewExpenses(group.id)" class="btn-secondary">💸 Expenses</button>
+            <button (click)="viewBalances(group.id)" class="btn-secondary">📊 Balances</button>
+            <button (click)="editGroup(group.id)" class="btn-secondary">✏️ Edit</button>
+            <button (click)="deleteGroup(group.id)" class="btn-danger">🗑️ Delete</button>
           </div>
         </div>
+      </div>
+      <div *ngIf="groups.length === 0 && !loading" style="text-align: center; padding: 3rem; color: #999;">
+        <p style="font-size: 1.1rem;">No groups yet. Create one to get started!</p>
       </div>
     </div>
   `,
   styles: [`
-    .groups-container { padding: 20px; }
-    .groups-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin-top: 20px; }
-    .group-card { border: 1px solid #ccc; padding: 15px; border-radius: 4px; }
-    .group-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
-    .member-add { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
-    .member-add input { flex: 1 1 180px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-    .member-add button { padding: 8px 12px; cursor: pointer; }
-    .member-add .error { width: 100%; color: red; font-size: 0.9em; margin-top: 4px; }
-    button { padding: 8px 12px; cursor: pointer; }
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-header button {
+      white-space: nowrap;
+    }
+
+    .member-add {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #f0f3f7;
+    }
+
+    .member-add input {
+      flex: 1 1 180px;
+      padding: 0.6rem;
+      border: 2px solid #e0e6ed;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .member-add input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .member-add button {
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .member-add .error {
+      width: 100%;
+      margin: 0;
+      padding: 0.5rem;
+    }
   `]
 })
 export class GroupsListComponent implements OnInit {

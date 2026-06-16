@@ -6,30 +6,41 @@ import { GroupService } from '../core/group.service';
   selector: 'app-create-group',
   template: `
     <div class="create-group-container">
-      <h2>{{ editMode ? 'Edit Group' : 'Create New Group' }}</h2>
+      <h2>{{ editMode ? '✏️ Edit Group' : '✨ Create New Group' }}</h2>
       <form (ngSubmit)="onSubmit()" #createForm="ngForm">
         <div>
           <label for="name">Group Name</label>
-          <input id="name" name="name" [(ngModel)]="name" required />
+          <input id="name" name="name" [(ngModel)]="name" placeholder="e.g., Vacation, Roommates" required />
         </div>
         <div>
           <label for="description">Description</label>
-          <textarea id="description" name="description" [(ngModel)]="description"></textarea>
+          <textarea id="description" name="description" [(ngModel)]="description" placeholder="What is this group for?"></textarea>
         </div>
-        <div>
-          <button type="submit" [disabled]="loading">{{ editMode ? 'Save' : 'Create' }}</button>
-          <button type="button" (click)="goBack()">Cancel</button>
+        <div style="display: flex; gap: 1rem;">
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            {{ loading ? 'Saving...' : (editMode ? 'Save Changes' : 'Create Group') }}
+          </button>
+          <button type="button" (click)="goBack()" class="btn-secondary">Cancel</button>
         </div>
       </form>
-      <p *ngIf="error" style="color:red">{{ error }}</p>
+      <p *ngIf="error" class="error">{{ error }}</p>
     </div>
   `,
   styles: [`
-    .create-group-container { padding: 20px; max-width: 500px; }
-    form div { margin: 15px 0; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-    button { padding: 8px 12px; margin-right: 10px; cursor: pointer; }
+    .create-group-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    button {
+      flex: 1;
+    }
+
+    @media (max-width: 600px) {
+      button {
+        flex: 1 1 auto;
+      }
+    }
   `]
 })
 export class CreateGroupComponent implements OnInit {
