@@ -7,7 +7,7 @@ import { GroupService } from '../core/group.service';
   selector: 'app-create-expense',
   template: `
     <div class="create-expense-container">
-      <h2>Add Expense to {{ groupName }}</h2>
+      <h2>{{ editMode ? 'Edit Expense' : 'Add Expense to ' + groupName }}</h2>
       <form (ngSubmit)="onSubmit()">
         <div>
           <label for="description">Description</label>
@@ -33,7 +33,7 @@ import { GroupService } from '../core/group.service';
           </div>
         </div>
         <div>
-          <button type="submit" [disabled]="loading">Create</button>
+          <button type="submit" [disabled]="loading">{{ editMode ? 'Save' : 'Create' }}</button>
           <button type="button" (click)="goBack()">Cancel</button>
         </div>
       </form>
@@ -51,6 +51,8 @@ import { GroupService } from '../core/group.service';
 })
 export class CreateExpenseComponent implements OnInit {
   groupId?: string;
+  expenseId?: string;
+  editMode = false;
   groupName = '';
   description = '';
   amount = 0;
@@ -70,6 +72,8 @@ export class CreateExpenseComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe((params) => {
       this.groupId = params['groupId'];
+      this.expenseId = params['expenseId'];
+      this.editMode = !!this.expenseId;
       if (this.groupId) {
         this.loadGroup();
       }
@@ -79,17 +83,49 @@ export class CreateExpenseComponent implements OnInit {
   loadGroup() {
     if (!this.groupId) return;
 
+    this.loading = true;
     this.groupService.getGroupById(this.groupId).subscribe({
       next: (res) => {
         this.groupName = res.group?.name || '';
         this.members = res.group?.members || [];
         this.members.forEach((member: any) => {
           const id = member.id || member.userId;
-          this.shares[id] = 0;
+          this.shares[id] = this.shares[id] ?? 0;
         });
+        if (this.editMode && this.expenseId) {
+          this.loadExpense();
+        } else {
+          this.loading = false;
+        }
       },
       error: (err) => {
         this.error = this.extractErrorMessage(err, 'Failed to load group');
+        this.loading = false;
+      }
+    });
+  }
+
+  loadExpense() {
+    if (!this.expenseId) return;
+
+    this.expenseService.getExpenseById(this.expenseId).subscribe({
+      next: (res) => {
+        const expense = res.expense || res;
+        this.description = expense.description || '';
+        this.amount = expense.amount || 0;
+        this.currency = expense.currency || 'USD';
+
+        (expense.shares || []).forEach((share: any) => {
+          const id = share.userId || share.id;
+          if (id) {
+            this.shares[id] = share.amount || 0;
+          }
+        });
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = this.extractErrorMessage(err, 'Failed to load expense');
+        this.loading = false;
       }
     });
   }
@@ -107,19 +143,26 @@ export class CreateExpenseComponent implements OnInit {
 
     this.loading = true;
     this.error = undefined;
-    this.expenseService.createExpense({
+
+    const payload = {
       groupId: this.groupId,
       description: this.description,
       amount: this.amount,
       currency: this.currency,
       shares: shareArray
-    }).subscribe({
+    };
+
+    const action = this.editMode && this.expenseId
+      ? this.expenseService.updateExpense(this.expenseId, payload)
+      : this.expenseService.createExpense(payload);
+
+    action.subscribe({
       next: () => {
         this.loading = false;
         this.router.navigate([`/groups/${this.groupId}/expenses`]);
       },
       error: (err) => {
-        this.error = this.extractErrorMessage(err, 'Failed to create expense');
+        this.error = this.extractErrorMessage(err, this.editMode ? 'Failed to update expense' : 'Failed to create expense');
         this.loading = false;
       }
     });

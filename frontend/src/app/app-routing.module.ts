@@ -14,8 +14,10 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'groups', component: GroupsListComponent, canActivate: [AuthGuard] },
   { path: 'groups/create', component: CreateGroupComponent, canActivate: [AuthGuard] },
+  { path: 'groups/:id/edit', component: CreateGroupComponent, canActivate: [AuthGuard] },
   { path: 'groups/:groupId/expenses', component: ExpensesListComponent, canActivate: [AuthGuard] },
   { path: 'groups/:groupId/expenses/create', component: CreateExpenseComponent, canActivate: [AuthGuard] },
+  { path: 'groups/:groupId/expenses/:expenseId/edit', component: CreateExpenseComponent, canActivate: [AuthGuard] },
   { path: 'groups/:groupId/balances', component: BalancesComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/groups', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
