@@ -88,7 +88,7 @@ export class CreateExpenseComponent implements OnInit {
         });
       },
       error: (err) => {
-        this.error = err?.error?.message || 'Failed to load group';
+        this.error = this.extractErrorMessage(err, 'Failed to load group');
       }
     });
   }
@@ -111,13 +111,34 @@ export class CreateExpenseComponent implements OnInit {
       shares: shareArray
     }).subscribe({
       next: () => {
+        this.loading = false;
         this.router.navigate([`/groups/${this.groupId}/expenses`]);
       },
       error: (err) => {
-        this.error = err?.error?.message || 'Failed to create expense';
+        this.error = this.extractErrorMessage(err, 'Failed to create expense');
         this.loading = false;
       }
     });
+  }
+
+  extractErrorMessage(error: any, fallback: string): string {
+    if (!error) {
+      return fallback;
+    }
+
+    if (error.error?.message) {
+      return error.error.message;
+    }
+
+    if (error.message) {
+      return error.message;
+    }
+
+    if (error.status && error.statusText) {
+      return `${error.status} ${error.statusText}`;
+    }
+
+    return fallback;
   }
 
   goBack() {

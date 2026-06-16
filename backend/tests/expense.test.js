@@ -149,6 +149,28 @@ describe('Expenses API', () => {
     expect(response.body.success).toBe(true);
   });
 
+  test('should rollback expense creation when a share recipient is invalid', async () => {
+    const response = await request(app)
+      .post('/api/expenses')
+      .set('Authorization', `Bearer ${user1Token}`)
+      .send({
+        groupId: group.id,
+        description: 'Invalid share',
+        amount: 40,
+        currency: 'USD',
+        shares: [
+          { userId: user1.id, amount: 20 },
+          { userId: '00000000-0000-0000-0000-000000000000', amount: 20 }
+        ]
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.message).toMatch(/not members/);
+
+    const expenseCount = await Expense.count({ where: { description: 'Invalid share' } });
+    expect(expenseCount).toBe(0);
+  });
+
   test('should not update expense as non-creator', async () => {
     const createRes = await request(app)
       .post('/api/expenses')

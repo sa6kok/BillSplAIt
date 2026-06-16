@@ -1,8 +1,15 @@
-const { Expense, GroupMember, ExpenseShare } = require('../models');
+const { sequelize, Expense, GroupMember, ExpenseShare } = require('../models');
 
 exports.createExpense = async (userId, { groupId, description, amount, currency, date, shares }) => {
-  if (!groupId || !amount || !shares || !Array.isArray(shares) || shares.length === 0) {
+  if (!groupId || amount == null || !shares || !Array.isArray(shares) || shares.length === 0) {
     const error = new Error('groupId, amount, and shares are required');
+    error.status = 400;
+    throw error;
+  }
+
+  const expenseAmount = Number(amount);
+  if (!Number.isFinite(expenseAmount) || expenseAmount < 0) {
+    const error = new Error('Expense amount must be a valid non-negative number');
     error.status = 400;
     throw error;
   }
@@ -14,16 +21,46 @@ exports.createExpense = async (userId, { groupId, description, amount, currency,
     throw error;
   }
 
-  const expense = await Expense.create({ groupId, createdBy: userId, description, amount, currency, date });
-  const expenseShares = shares.map((share) => ({
-    expenseId: expense.id,
-    userId: share.userId,
-    amount: share.amount,
-    paid: false
-  }));
+  const groupMembers = await GroupMember.findAll({ where: { groupId } });
+  const validMemberIds = new Set(groupMembers.map((m) => m.userId));
+  const invalidShare = shares.find((share) => !validMemberIds.has(share.userId));
+  if (invalidShare) {
+    const error = new Error('One or more share recipients are not members of the group');
+    error.status = 400;
+    throw error;
+  }
 
-  await ExpenseShare.bulkCreate(expenseShares);
-  return expense;
+  const invalidShareAmount = shares.find((share) => {
+    const shareAmount = Number(share.amount);
+    return !Number.isFinite(shareAmount) || shareAmount < 0;
+  });
+  if (invalidShareAmount) {
+    const error = new Error('Each share amount must be a valid non-negative number');
+    error.status = 400;
+    throw error;
+  }
+
+  const transaction = await sequelize.transaction();
+  try {
+    const expense = await Expense.create(
+      { groupId, createdBy: userId, description, amount: expenseAmount, currency, date },
+      { transaction }
+    );
+
+    const expenseShares = shares.map((share) => ({
+      expenseId: expense.id,
+      userId: share.userId,
+      amount: Number(share.amount),
+      paid: false
+    }));
+
+    await ExpenseShare.bulkCreate(expenseShares, { transaction });
+    await transaction.commit();
+    return expense;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
 };
 
 exports.getExpensesForGroup = async (userId, groupId) => {
