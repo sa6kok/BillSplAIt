@@ -15,6 +15,7 @@ yarn-error.log*
 
 # Frontend ignores
 /frontend/node_modules/
+/frontend/.angular/
 /frontend/dist/
 /frontend/coverage/
 /frontend/.env
