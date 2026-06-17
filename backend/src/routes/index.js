@@ -6,6 +6,29 @@ const balanceRoutes = require('./balanceRoutes');
 
 const router = express.Router();
 
+/**
+ * @openapi
+ * /health:
+ *   get:
+ *     tags:
+ *       - Health
+ *     summary: Health check
+ *     description: Returns the current health status of the backend.
+ *     responses:
+ *       200:
+ *         description: Backend is healthy.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ *                 message:
+ *                   type: string
+ *                   example: BillSplAIt backend is healthy
+ */
 router.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'BillSplAIt backend is healthy' });
 });

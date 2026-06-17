@@ -58,6 +58,22 @@ GET http://localhost:4000/api/health
 expected response: { "status": "ok", "message": "BillSplAIt backend is healthy" }
 ```
 
+### Backend API Docs (Swagger)
+
+Once the backend is running, interactive API docs are available at:
+
+```
+http://localhost:4000/api/docs
+```
+
+The raw OpenAPI spec (JSON) is at:
+
+```
+http://localhost:4000/api/docs.json
+```
+
+Endpoints that require authentication show a padlock icon in the UI. Use the **Authorize** button and enter `Bearer <your_jwt_token>` to test protected routes.
+
 ### 4) Run frontend locally
 
 ```bash
