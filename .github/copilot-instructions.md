@@ -46,6 +46,10 @@ This repository contains a bill-splitting web application similar to Splitwise.
 - Use guards for route protection.
 - Use interceptors to attach JWT tokens.
 - Keep components dumb (UI only).
+- Keep each Angular component in its own folder (for example `src/app/features/expenses-list/`).
+- Use separate files per component: `.component.ts`, `.component.html`, `.component.css`.
+- Use `.component.spec.ts` in the same folder when tests are required.
+- Do not use inline `template` or inline `styles` in component decorators.
 
 ---
 
