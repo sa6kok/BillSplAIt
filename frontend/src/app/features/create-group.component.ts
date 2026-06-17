@@ -10,7 +10,7 @@ import { GroupService } from '../core/group.service';
       <form (ngSubmit)="onSubmit()" #createForm="ngForm">
         <div>
           <label for="name">Group Name</label>
-          <input id="name" name="name" [(ngModel)]="name" placeholder="e.g., Vacation, Roommates" required />
+          <input id="name" name="name" type="text" [(ngModel)]="name" placeholder="e.g., Vacation, Roommates" required />
         </div>
         <div>
           <label for="description">Description</label>

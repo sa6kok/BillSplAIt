@@ -11,7 +11,7 @@ import { GroupService } from '../core/group.service';
       <form (ngSubmit)="onSubmit()">
         <div>
           <label for="description">Description</label>
-          <input id="description" name="description" [(ngModel)]="description" placeholder="e.g., Dinner, Movie tickets" required />
+          <input id="description" name="description" type="text" [(ngModel)]="description" placeholder="e.g., Dinner, Movie tickets" required />
         </div>
         <div>
           <label for="amount">Amount</label>

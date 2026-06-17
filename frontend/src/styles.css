@@ -304,6 +304,27 @@ small {
   width: auto;
 }
 
+.member-payer {
+  background: #f8f9fc;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin: 0.75rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.member-payer label {
+  margin: 0;
+  flex: 1;
+}
+
+.member-payer input {
+  flex: 0.5;
+  margin-left: 1rem;
+  width: auto;
+}
+
 /* Balance Display */
 .balance-info {
   display: grid;
