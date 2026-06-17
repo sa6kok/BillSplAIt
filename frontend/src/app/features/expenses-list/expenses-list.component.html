@@ -1,0 +1,26 @@
+<div class="expenses-container">
+  <div class="page-header">
+    <h2>💸 Expenses for {{ groupName }}</h2>
+    <div class="header-actions">
+      <button (click)="goToCreate()" class="btn-primary">+ Add Expense</button>
+      <button (click)="goBack()" class="btn-secondary">← Back</button>
+    </div>
+  </div>
+  <div *ngIf="loading" class="loading">⏳ Loading expenses...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div class="expenses-list">
+    <div *ngFor="let expense of expenses" class="expense-card">
+      <h3>{{ expense.description }}</h3>
+      <p><strong>💰 {{ expense.amount }} {{ expense.currency }}</strong></p>
+      <p><small>👥 Shares: {{ expense.shares?.length || 0 }} people</small></p>
+      <p *ngIf="expense.payers?.length"><small>💳 Paid by: <span *ngFor="let p of expense.payers; let i = index">{{ memberName(p.userId) }} ({{ p.amount }})<span *ngIf="i < expense.payers.length - 1">, </span></span></small></p>
+      <div class="group-actions">
+        <button (click)="editExpense(expense.id)" class="btn-secondary">✏️ Edit</button>
+        <button (click)="deleteExpense(expense.id)" class="btn-danger">🗑️ Delete</button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="expenses.length === 0 && !loading" class="empty-state">
+    <p>No expenses yet.</p>
+  </div>
+</div>

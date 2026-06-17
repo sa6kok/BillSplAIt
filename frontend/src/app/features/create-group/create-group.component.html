@@ -1,0 +1,20 @@
+<div class="create-group-container">
+  <h2>{{ editMode ? '✏️ Edit Group' : '✨ Create New Group' }}</h2>
+  <form (ngSubmit)="onSubmit()" #createForm="ngForm">
+    <div>
+      <label for="name">Group Name</label>
+      <input id="name" name="name" type="text" [(ngModel)]="name" placeholder="e.g., Vacation, Roommates" required />
+    </div>
+    <div>
+      <label for="description">Description</label>
+      <textarea id="description" name="description" [(ngModel)]="description" placeholder="What is this group for?"></textarea>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn-primary" [disabled]="loading">
+        {{ loading ? 'Saving...' : (editMode ? 'Save Changes' : 'Create Group') }}
+      </button>
+      <button type="button" (click)="goBack()" class="btn-secondary">Cancel</button>
+    </div>
+  </form>
+  <p *ngIf="error" class="error">{{ error }}</p>
+</div>

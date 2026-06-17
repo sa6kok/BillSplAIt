@@ -1,0 +1,35 @@
+<div class="groups-container">
+  <div class="page-header">
+    <h2>My Groups</h2>
+    <button (click)="goToCreate()" class="btn-primary">+ Create New Group</button>
+  </div>
+  <div *ngIf="loading" class="loading">⏳ Loading groups...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div class="groups-list">
+    <div *ngFor="let group of groups" class="group-card">
+      <h3>{{ group.name }}</h3>
+      <p>{{ group.description }}</p>
+      <p><small>👥 Members: {{ group.members?.length || 0 }}</small></p>
+      <div class="member-add">
+        <input
+          type="email"
+          placeholder="Invite by email"
+          [(ngModel)]="memberEmail[group.id]"
+        />
+        <button (click)="addMember(group.id)" [disabled]="memberLoading[group.id]" class="btn-secondary">
+          {{ memberLoading[group.id] ? 'Adding...' : 'Add' }}
+        </button>
+        <div *ngIf="memberError[group.id]" class="error member-error">{{ memberError[group.id] }}</div>
+      </div>
+      <div class="group-actions">
+        <button (click)="viewExpenses(group.id)" class="btn-secondary">💸 Expenses</button>
+        <button (click)="viewBalances(group.id)" class="btn-secondary">📊 Balances</button>
+        <button (click)="editGroup(group.id)" class="btn-secondary">✏️ Edit</button>
+        <button (click)="deleteGroup(group.id)" class="btn-danger">🗑️ Delete</button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="groups.length === 0 && !loading" class="empty-state">
+    <p>No groups yet. Create one to get started!</p>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div *ngIf="isAuthenticated" class="navbar">
+  <h1>💰 BillSplAIt</h1>
+  <div class="navbar-actions">
+    <span class="navbar-user">{{ userEmail }}</span>
+    <button (click)="logout()" class="btn-secondary">Logout</button>
+  </div>
+</div>
+<div class="main-container">
+  <router-outlet></router-outlet>
+</div>

@@ -1,0 +1,25 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>💰 BillSplAIt</h1>
+    <h2>Login</h2>
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" [(ngModel)]="email" required />
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" [(ngModel)]="password" required />
+      </div>
+      <div>
+        <button type="submit" class="btn-primary" [disabled]="loading">
+          {{ loading ? 'Logging in...' : 'Login' }}
+        </button>
+      </div>
+    </form>
+    <p *ngIf="error" class="error">{{ error }}</p>
+    <p class="auth-link">
+      Don't have an account? <a (click)="goToRegister()">Register here</a>
+    </p>
+  </div>
+</div>

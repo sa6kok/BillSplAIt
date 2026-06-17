@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './auth/login.component';
-import { RegisterComponent } from './auth/register.component';
-import { GroupsListComponent } from './features/groups-list.component';
-import { CreateGroupComponent } from './features/create-group.component';
-import { ExpensesListComponent } from './features/expenses-list.component';
-import { CreateExpenseComponent } from './features/create-expense.component';
-import { BalancesComponent } from './features/balances.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { GroupsListComponent } from './features/groups-list/groups-list.component';
+import { CreateGroupComponent } from './features/create-group/create-group.component';
+import { ExpensesListComponent } from './features/expenses-list/expenses-list.component';
+import { CreateExpenseComponent } from './features/create-expense/create-expense.component';
+import { BalancesComponent } from './features/balances/balances.component';
 import { AuthGuard } from './auth/auth.guard';
 
 const routes: Routes = [

@@ -1,47 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { GroupService } from '../core/group.service';
+import { GroupService } from '../../core/group.service';
 
 @Component({
   selector: 'app-create-group',
-  template: `
-    <div class="create-group-container">
-      <h2>{{ editMode ? '✏️ Edit Group' : '✨ Create New Group' }}</h2>
-      <form (ngSubmit)="onSubmit()" #createForm="ngForm">
-        <div>
-          <label for="name">Group Name</label>
-          <input id="name" name="name" type="text" [(ngModel)]="name" placeholder="e.g., Vacation, Roommates" required />
-        </div>
-        <div>
-          <label for="description">Description</label>
-          <textarea id="description" name="description" [(ngModel)]="description" placeholder="What is this group for?"></textarea>
-        </div>
-        <div style="display: flex; gap: 1rem;">
-          <button type="submit" class="btn-primary" [disabled]="loading">
-            {{ loading ? 'Saving...' : (editMode ? 'Save Changes' : 'Create Group') }}
-          </button>
-          <button type="button" (click)="goBack()" class="btn-secondary">Cancel</button>
-        </div>
-      </form>
-      <p *ngIf="error" class="error">{{ error }}</p>
-    </div>
-  `,
-  styles: [`
-    .create-group-container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    button {
-      flex: 1;
-    }
-
-    @media (max-width: 600px) {
-      button {
-        flex: 1 1 auto;
-      }
-    }
-  `]
+  templateUrl: './create-group.component.html',
+  styleUrls: ['./create-group.component.css']
 })
 export class CreateGroupComponent implements OnInit {
   groupId?: string;

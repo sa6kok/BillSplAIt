@@ -1,75 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ExpenseService } from '../core/expense.service';
-import { GroupService } from '../core/group.service';
+import { ExpenseService } from '../../core/expense.service';
+import { GroupService } from '../../core/group.service';
 
 @Component({
   selector: 'app-create-expense',
-  template: `
-    <div class="create-expense-container">
-      <h2>{{ editMode ? '✏️ Edit Expense' : '➕ Add Expense to ' + groupName }}</h2>
-      <form (ngSubmit)="onSubmit()">
-        <div>
-          <label for="description">Description</label>
-          <input id="description" name="description" type="text" [(ngModel)]="description" placeholder="e.g., Dinner, Movie tickets" required />
-        </div>
-        <div>
-          <label for="amount">Amount</label>
-          <input id="amount" name="amount" [(ngModel)]="amount" type="number" step="0.01" placeholder="0.00" required />
-        </div>
-        <div>
-          <label for="currency">Currency</label>
-          <select id="currency" name="currency" [(ngModel)]="currency">
-            <option>USD</option>
-            <option>EUR</option>
-            <option>GBP</option>
-          </select>
-        </div>
-        <div>
-          <h3>👥 Split Among</h3>
-          <div *ngFor="let member of members" class="member-share">
-            <label>{{ member.name || member.User?.name || member.id || member.userId }}</label>
-            <input id="share-{{member.id || member.userId}}" name="share-{{member.id || member.userId}}" [(ngModel)]="shares[member.id || member.userId]" type="number" step="0.01" placeholder="0.00" />
-          </div>
-        </div>
-        <div>
-          <h3>💳 Who Paid</h3>
-          <div *ngFor="let member of members" class="member-payer">
-            <label>{{ member.name || member.User?.name || member.id || member.userId }}</label>
-            <input id="payer-{{member.id || member.userId}}" name="payer-{{member.id || member.userId}}" [(ngModel)]="payers[member.id || member.userId]" type="number" step="0.01" placeholder="0.00" />
-          </div>
-        </div>
-        <div style="display: flex; gap: 1rem;">
-          <button type="submit" class="btn-primary" [disabled]="loading">
-            {{ loading ? 'Saving...' : (editMode ? 'Save Changes' : 'Create Expense') }}
-          </button>
-          <button type="button" (click)="goBack()" class="btn-secondary">Cancel</button>
-        </div>
-      </form>
-      <p *ngIf="error" class="error">{{ error }}</p>
-    </div>
-  `,
-  styles: [`
-    .create-expense-container {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    h3 {
-      margin-top: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    button {
-      flex: 1;
-    }
-
-    @media (max-width: 600px) {
-      button {
-        flex: 1 1 auto;
-      }
-    }
-  `]
+  templateUrl: './create-expense.component.html',
+  styleUrls: ['./create-expense.component.css']
 })
 export class CreateExpenseComponent implements OnInit {
   groupId?: string;
