@@ -78,5 +78,13 @@ This repository contains a bill-splitting web application similar to Splitwise.
   - Angular component logic (if requested)
   - tests for backend and frontend
 - Never mix backend and frontend code.
+
+## API Documentation Rules
+- Every new backend route handler MUST include a JSDoc `@openapi` annotation directly above the `router.<method>()` call in the route file.
+- Annotations must follow the OpenAPI 3.0 format already used in `backend/src/routes/*.js`.
+- Each annotation must include: `tags`, `summary`, `security` (bearerAuth when the route uses authMiddleware), `parameters` (if path/query params exist), `requestBody` (if the route accepts a body), and `responses` (at minimum 200/201 and 401 where applicable).
+- Request/response schemas must reference shared `$ref: '#/components/schemas/...'` types defined in `backend/src/config/swagger.js` or declare inline schemas.
+- If a new model or response shape is introduced, add its schema to `backend/src/config/swagger.js` under `components.schemas`.
+- Do not add Swagger annotations to controllers, services, or middleware — route files only.
 - Never create business logic in Angular.
 - Always keep code modular and clean.

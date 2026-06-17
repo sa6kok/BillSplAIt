@@ -9,3 +9,8 @@ When implementing a backend feature:
 6. Ensure all logic is in the service
 7. Ensure controller is thin
 8. Write Jest + Supertest tests
+9. Add a JSDoc `@openapi` annotation above every `router.<method>()` call in the route file
+	- Follow the OpenAPI 3.0 format used in the existing route files
+	- Include `tags`, `summary`, `security` (bearerAuth if auth-protected), `parameters`, `requestBody`, and `responses`
+	- Reference shared schemas from `backend/src/config/swagger.js` via `$ref` where possible
+	- If a new response shape is needed, add its schema to `backend/src/config/swagger.js` under `components.schemas`
