@@ -28,6 +28,7 @@ export class ExpenseService {
     amount: number;
     currency: string;
     shares: ExpenseShare[];
+    payers?: ExpenseShare[];
   }): Observable<any> {
     return this.api.post('/expenses', payload);
   }

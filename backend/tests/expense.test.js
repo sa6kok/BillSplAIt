@@ -52,6 +52,9 @@ describe('Expenses API', () => {
         shares: [
           { userId: user1.id, amount: 25 },
           { userId: user2.id, amount: 25 }
+        ],
+        payers: [
+          { userId: user1.id, amount: 50 }
         ]
       });
 
@@ -71,6 +74,9 @@ describe('Expenses API', () => {
         shares: [
           { userId: user1.id, amount: 15 },
           { userId: user2.id, amount: 15 }
+        ],
+        payers: [
+          { userId: user1.id, amount: 30 }
         ]
       });
 
@@ -91,7 +97,8 @@ describe('Expenses API', () => {
         description: 'Breakfast',
         amount: 15,
         currency: 'USD',
-        shares: [{ userId: user1.id, amount: 15 }]
+        shares: [{ userId: user1.id, amount: 15 }],
+        payers: [{ userId: user1.id, amount: 15 }]
       });
 
     const expenseId = createRes.body.expense.id;
@@ -113,7 +120,8 @@ describe('Expenses API', () => {
         description: 'Initial',
         amount: 20,
         currency: 'USD',
-        shares: [{ userId: user1.id, amount: 20 }]
+        shares: [{ userId: user1.id, amount: 20 }],
+        payers: [{ userId: user1.id, amount: 20 }]
       });
 
     const expenseId = createRes.body.expense.id;
@@ -136,7 +144,8 @@ describe('Expenses API', () => {
         description: 'Temporary',
         amount: 10,
         currency: 'USD',
-        shares: [{ userId: user1.id, amount: 10 }]
+        shares: [{ userId: user1.id, amount: 10 }],
+        payers: [{ userId: user1.id, amount: 10 }]
       });
 
     const expenseId = createRes.body.expense.id;
@@ -161,7 +170,8 @@ describe('Expenses API', () => {
         shares: [
           { userId: user1.id, amount: 20 },
           { userId: '00000000-0000-0000-0000-000000000000', amount: 20 }
-        ]
+        ],
+        payers: [{ userId: user1.id, amount: 40 }]
       });
 
     expect(response.status).toBe(400);
@@ -180,7 +190,8 @@ describe('Expenses API', () => {
         description: 'Other user',
         amount: 40,
         currency: 'USD',
-        shares: [{ userId: user2.id, amount: 40 }]
+        shares: [{ userId: user2.id, amount: 40 }],
+        payers: [{ userId: user1.id, amount: 40 }]
       });
 
     const expenseId = createRes.body.expense.id;

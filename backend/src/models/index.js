@@ -11,6 +11,7 @@ const Group = require('./group')(sequelize, DataTypes);
 const GroupMember = require('./groupMember')(sequelize, DataTypes);
 const Expense = require('./expense')(sequelize, DataTypes);
 const ExpenseShare = require('./expenseShare')(sequelize, DataTypes);
+const ExpensePayer = require('./expensePayer')(sequelize, DataTypes);
 
 User.hasMany(Group, { foreignKey: 'ownerId', as: 'ownedGroups' });
 Group.belongsTo(User, { foreignKey: 'ownerId', as: 'owner' });
@@ -37,8 +38,14 @@ Expense.belongsTo(User, { foreignKey: 'createdBy', as: 'creator' });
 Expense.hasMany(ExpenseShare, { foreignKey: 'expenseId', as: 'shares' });
 ExpenseShare.belongsTo(Expense, { foreignKey: 'expenseId', as: 'expense' });
 
+Expense.hasMany(ExpensePayer, { foreignKey: 'expenseId', as: 'payers' });
+ExpensePayer.belongsTo(Expense, { foreignKey: 'expenseId', as: 'expense' });
+
 User.hasMany(ExpenseShare, { foreignKey: 'userId', as: 'expenseShares' });
 ExpenseShare.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+User.hasMany(ExpensePayer, { foreignKey: 'userId', as: 'expensePayers' });
+ExpensePayer.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 module.exports = {
   sequelize,
@@ -47,4 +54,6 @@ module.exports = {
   GroupMember,
   Expense,
   ExpenseShare
+  ,
+  ExpensePayer
 };

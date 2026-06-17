@@ -32,6 +32,13 @@ import { GroupService } from '../core/group.service';
             <input id="share-{{member.id || member.userId}}" name="share-{{member.id || member.userId}}" [(ngModel)]="shares[member.id || member.userId]" type="number" step="0.01" placeholder="0.00" />
           </div>
         </div>
+        <div>
+          <h3>💳 Who Paid</h3>
+          <div *ngFor="let member of members" class="member-payer">
+            <label>{{ member.name || member.User?.name || member.id || member.userId }}</label>
+            <input id="payer-{{member.id || member.userId}}" name="payer-{{member.id || member.userId}}" [(ngModel)]="payers[member.id || member.userId]" type="number" step="0.01" placeholder="0.00" />
+          </div>
+        </div>
         <div style="display: flex; gap: 1rem;">
           <button type="submit" class="btn-primary" [disabled]="loading">
             {{ loading ? 'Saving...' : (editMode ? 'Save Changes' : 'Create Expense') }}
@@ -74,6 +81,7 @@ export class CreateExpenseComponent implements OnInit {
   currency = 'USD';
   members: any[] = [];
   shares: { [key: string]: number } = {};
+  payers: { [key: string]: number } = {};
   loading = false;
   error?: string;
 
@@ -106,6 +114,7 @@ export class CreateExpenseComponent implements OnInit {
         this.members.forEach((member: any) => {
           const id = member.id || member.userId;
           this.shares[id] = this.shares[id] ?? 0;
+          this.payers[id] = this.payers[id] ?? 0;
         });
         if (this.editMode && this.expenseId) {
           this.loadExpense();
@@ -136,6 +145,12 @@ export class CreateExpenseComponent implements OnInit {
             this.shares[id] = share.amount || 0;
           }
         });
+        (expense.payers || []).forEach((p: any) => {
+          const id = p.userId || p.id;
+          if (id) {
+            this.payers[id] = p.amount || 0;
+          }
+        });
         this.loading = false;
       },
       error: (err) => {
@@ -159,12 +174,41 @@ export class CreateExpenseComponent implements OnInit {
     this.loading = true;
     this.error = undefined;
 
+    const payerArray = this.members.map((member: any) => {
+      const id = member.id || member.userId;
+      return { userId: id, amount: this.payers[id] || 0 };
+    }).filter(p => (p.amount || 0) > 0);
+
+    // Client-side validation: sums must match amount
+    const totalShares = shareArray.reduce((s, sh) => s + Number(sh.amount || 0), 0);
+    const totalPayers = payerArray.reduce((s, p) => s + Number(p.amount || 0), 0);
+    const round = (n: number) => Math.round(n * 100) / 100;
+
+    if (Math.abs(round(totalShares) - round(this.amount)) > 0.01) {
+      this.error = `Sum of shares (${round(totalShares)}) must equal total amount (${round(this.amount)})`;
+      this.loading = false;
+      return;
+    }
+
+    if (payerArray.length === 0) {
+      this.error = 'At least one payer must be specified';
+      this.loading = false;
+      return;
+    }
+
+    if (Math.abs(round(totalPayers) - round(this.amount)) > 0.01) {
+      this.error = `Sum of payers (${round(totalPayers)}) must equal total amount (${round(this.amount)})`;
+      this.loading = false;
+      return;
+    }
+
     const payload = {
       groupId: this.groupId,
       description: this.description,
       amount: this.amount,
       currency: this.currency,
-      shares: shareArray
+      shares: shareArray,
+      payers: payerArray
     };
 
     const action = this.editMode && this.expenseId

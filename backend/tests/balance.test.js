@@ -52,7 +52,8 @@ describe('Balances API', () => {
         shares: [
           { userId: user1.id, amount: 50 },
           { userId: user2.id, amount: 50 }
-        ]
+        ],
+        payers: [{ userId: user1.id, amount: 100 }]
       });
 
     const response = await request(app)
@@ -75,7 +76,8 @@ describe('Balances API', () => {
         shares: [
           { userId: user1.id, amount: 30 },
           { userId: user2.id, amount: 30 }
-        ]
+        ],
+        payers: [{ userId: user1.id, amount: 60 }]
       });
 
     const response = await request(app)
@@ -99,7 +101,8 @@ describe('Balances API', () => {
         shares: [
           { userId: user1.id, amount: 40 },
           { userId: user2.id, amount: 60 }
-        ]
+        ],
+        payers: [{ userId: user1.id, amount: 100 }]
       });
 
     const response = await request(app)

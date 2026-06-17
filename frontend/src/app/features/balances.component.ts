@@ -15,12 +15,21 @@ import { GroupService } from '../core/group.service';
       <div *ngIf="error" class="error">{{ error }}</div>
       <div class="balances-list">
         <div *ngFor="let balance of balances" class="balance-card">
-          <h3>{{ getUserName(balance.userId) }}</h3>
+          <h3>{{ balance.userName || getUserName(balance.userId) }}</h3>
+          <p><small>{{ balance.userEmail }}</small></p>
           <p>💰 Total Share: <strong>{{ balance.total }}</strong></p>
           <p>✅ Amount Paid: <strong>{{ balance.paid }}</strong></p>
           <p [style.color]="balance.due > 0 ? '#f5576c' : '#667eea'">
             <strong>{{ balance.due > 0 ? '💸 Owes' : '💳 Owed' }}: {{ Math.abs(balance.due) }}</strong>
           </p>
+        </div>
+      </div>
+      <div *ngIf="debts && debts.length > 0" class="debts-section" style="margin-top: 2rem;">
+        <h3>💼 Who Owes Whom</h3>
+        <div class="debts-list">
+          <div *ngFor="let debt of debts" class="debt-card">
+            <p><strong>{{ debt.fromName }}</strong> owes <strong>{{ debt.toName }}</strong>: <span style="color: #f5576c; font-weight: bold;">{{ debt.amount }}</span></p>
+          </div>
         </div>
       </div>
       <div *ngIf="balances.length === 0 && !loading" style="text-align: center; padding: 3rem; color: #999;">
@@ -54,6 +63,7 @@ export class BalancesComponent implements OnInit {
   groupId?: string;
   groupName = '';
   balances: any[] = [];
+  debts: any[] = [];
   loading = false;
   error?: string;
   members: any[] = [];
@@ -92,6 +102,7 @@ export class BalancesComponent implements OnInit {
     this.balanceService.getGroupBalances(this.groupId).subscribe({
       next: (res) => {
         this.balances = res.balances || [];
+        this.debts = res.debts || [];
         this.loading = false;
       },
       error: (err) => {

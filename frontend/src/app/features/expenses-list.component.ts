@@ -21,6 +21,7 @@ import { GroupService } from '../core/group.service';
           <h3>{{ expense.description }}</h3>
           <p><strong>💰 {{ expense.amount }} {{ expense.currency }}</strong></p>
           <p><small>👥 Shares: {{ expense.shares?.length || 0 }} people</small></p>
+          <p *ngIf="expense.payers?.length"><small>💳 Paid by: <span *ngFor="let p of expense.payers; let i = index">{{ memberName(p.userId) }} ({{ p.amount }})<span *ngIf="i < expense.payers.length - 1">, </span></span></small></p>
           <div class="group-actions">
             <button (click)="editExpense(expense.id)" class="btn-secondary">✏️ Edit</button>
             <button (click)="deleteExpense(expense.id)" class="btn-danger">🗑️ Delete</button>
@@ -67,6 +68,7 @@ import { GroupService } from '../core/group.service';
 export class ExpensesListComponent implements OnInit {
   groupId?: string;
   groupName = '';
+  members: any[] = [];
   expenses: any[] = [];
   loading = false;
   error?: string;
@@ -94,6 +96,7 @@ export class ExpensesListComponent implements OnInit {
     this.groupService.getGroupById(this.groupId).subscribe({
       next: (res) => {
         this.groupName = res.group?.name || '';
+        this.members = res.group?.members || [];
       },
       error: (err) => {
         this.error = err?.error?.message || 'Failed to load group';
@@ -124,6 +127,11 @@ export class ExpensesListComponent implements OnInit {
 
   editExpense(id: string) {
     this.router.navigate([`/groups/${this.groupId}/expenses/${id}/edit`]);
+  }
+
+  memberName(userId: string) {
+    const m = this.members.find((x: any) => x.id === userId || x.userId === userId);
+    return m?.name || m?.User?.name || userId;
   }
 
   deleteExpense(id: string) {

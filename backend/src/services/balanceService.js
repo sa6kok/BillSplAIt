@@ -1,4 +1,4 @@
-const { Expense, ExpenseShare, GroupMember, Group } = require('../models');
+const { Expense, ExpenseShare, ExpensePayer, GroupMember, Group, User } = require('../models');
 
 exports.calculateBalances = async (userId) => {
   const memberships = await GroupMember.findAll({ where: { userId } });
@@ -34,30 +34,74 @@ exports.getGroupBalances = async (userId, groupId) => {
   const expenses = await Expense.findAll({
     where: { groupId },
     include: [
-      {
-        model: ExpenseShare,
-        as: 'shares'
-      }
+      { model: ExpenseShare, as: 'shares' },
+      { model: ExpensePayer, as: 'payers' }
     ]
   });
 
-  const balances = {};
+  const summaries = {};
+  const debts = [];
+
   expenses.forEach((expense) => {
+    const totalPaid = expense.payers.reduce((s, p) => s + parseFloat(p.amount), 0);
+
+    // accumulate per-user totals
     expense.shares.forEach((share) => {
-      if (!balances[share.userId]) {
-        balances[share.userId] = { total: 0, paid: 0 };
-      }
-      balances[share.userId].total += parseFloat(share.amount);
-      if (share.paid) {
-        balances[share.userId].paid += parseFloat(share.amount);
-      }
+      if (!summaries[share.userId]) summaries[share.userId] = { total: 0, paid: 0 };
+      summaries[share.userId].total += parseFloat(share.amount);
+      if (share.paid) summaries[share.userId].paid += parseFloat(share.amount);
+    });
+
+    // allocate each share across payers proportionally
+    expense.shares.forEach((share) => {
+      if (totalPaid <= 0) return;
+      expense.payers.forEach((payer) => {
+        const payerShare = (parseFloat(payer.amount) / totalPaid) * parseFloat(share.amount);
+        const rounded = Math.round(payerShare * 100) / 100;
+        if (rounded <= 0) return;
+        if (payer.userId !== share.userId) {
+          debts.push({ from: share.userId, to: payer.userId, amount: rounded, expenseId: expense.id });
+        }
+        // count payer's paid contribution
+        if (!summaries[payer.userId]) summaries[payer.userId] = { total: 0, paid: 0 };
+        summaries[payer.userId].paid += rounded;
+      });
     });
   });
 
-  return Object.entries(balances).map(([userId, balance]) => ({
+  // Fetch all users in group for enrichment
+  const groupMembers = await GroupMember.findAll({
+    where: { groupId }
+  });
+
+  const memberUserIds = groupMembers.map((gm) => gm.userId);
+  const users = await User.findAll({
+    where: { id: memberUserIds }
+  });
+
+  const userMap = {};
+  users.forEach((u) => {
+    userMap[u.id] = { name: u.name, email: u.email };
+  });
+
+  const summaryArray = Object.entries(summaries).map(([userId, balance]) => ({
     userId,
-    total: balance.total,
-    paid: balance.paid,
-    due: balance.total - balance.paid
+    userName: userMap[userId]?.name || userId,
+    userEmail: userMap[userId]?.email || '',
+    total: Math.round((balance.total || 0) * 100) / 100,
+    paid: Math.round((balance.paid || 0) * 100) / 100,
+    due: Math.round(((balance.total || 0) - (balance.paid || 0)) * 100) / 100
   }));
+
+  // Enrich debts with user names
+  const enrichedDebts = debts.map((debt) => ({
+    from: debt.from,
+    fromName: userMap[debt.from]?.name || debt.from,
+    to: debt.to,
+    toName: userMap[debt.to]?.name || debt.to,
+    amount: debt.amount,
+    expenseId: debt.expenseId
+  }));
+
+  return { summaries: summaryArray, debts: enrichedDebts };
 };
