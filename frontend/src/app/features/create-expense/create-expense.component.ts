@@ -97,6 +97,36 @@ export class CreateExpenseComponent implements OnInit {
     });
   }
 
+  onAmountBlur() {
+    if (!this.members.length) {
+      return;
+    }
+
+    const totalAmount = Number(this.amount || 0);
+    if (totalAmount <= 0) {
+      this.members.forEach((member: any) => {
+        const id = member.id || member.userId;
+        this.shares[id] = 0;
+      });
+      return;
+    }
+
+    const memberIds = this.members.map((member: any) => member.id || member.userId).filter(Boolean);
+    if (!memberIds.length) {
+      return;
+    }
+
+    const totalCents = Math.round(totalAmount * 100);
+    const baseShareCents = Math.floor(totalCents / memberIds.length);
+    let remainder = totalCents - baseShareCents * memberIds.length;
+
+    memberIds.forEach((id: string) => {
+      const extraCent = remainder > 0 ? 1 : 0;
+      this.shares[id] = (baseShareCents + extraCent) / 100;
+      remainder -= extraCent;
+    });
+  }
+
   onSubmit() {
     if (!this.groupId) return;
 

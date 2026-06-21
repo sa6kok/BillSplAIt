@@ -63,4 +63,26 @@ describe('CreateExpenseComponent', () => {
     expect(expenseService.createExpense).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/groups/g1/expenses']);
   });
+
+  it('prefills split shares equally when amount input loses focus', () => {
+    component.members = [{ userId: 'u1' }, { userId: 'u2' }, { userId: 'u3' }];
+    component.amount = 100;
+
+    component.onAmountBlur();
+
+    expect(component.shares['u1']).toBe(33.34);
+    expect(component.shares['u2']).toBe(33.33);
+    expect(component.shares['u3']).toBe(33.33);
+  });
+
+  it('resets split shares to zero when amount is zero or negative', () => {
+    component.members = [{ userId: 'u1' }, { userId: 'u2' }];
+    component.shares = { u1: 10, u2: 20 };
+    component.amount = 0;
+
+    component.onAmountBlur();
+
+    expect(component.shares['u1']).toBe(0);
+    expect(component.shares['u2']).toBe(0);
+  });
 });
