@@ -15,7 +15,7 @@ export class CreateExpenseComponent implements OnInit {
   groupName = '';
   description = '';
   amount = 0;
-  currency = 'USD';
+  currency = 'EUR';
   members: any[] = [];
   shares: { [key: string]: number } = {};
   payers: { [key: string]: number } = {};
