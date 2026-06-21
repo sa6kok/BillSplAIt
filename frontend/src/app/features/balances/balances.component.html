@@ -17,7 +17,7 @@
     </div>
   </div>
   <div *ngIf="debts && debts.length > 0" class="debts-section" style="margin-top: 2rem;">
-    <h3>💼 Who Owes Whom</h3>
+    <h3>💼 Who Owes Whom (Summary)</h3>
     <div class="debts-list">
       <div *ngFor="let debt of debts" class="debt-card">
         <p><strong>{{ debt.fromName }}</strong> owes <strong>{{ debt.toName }}</strong>: <span style="color: #f5576c; font-weight: bold;">{{ debt.amount }}</span></p>

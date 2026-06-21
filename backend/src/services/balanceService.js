@@ -93,15 +93,34 @@ exports.getGroupBalances = async (userId, groupId) => {
     due: Math.round(((balance.total || 0) - (balance.paid || 0)) * 100) / 100
   }));
 
-  // Enrich debts with user names
-  const enrichedDebts = debts.map((debt) => ({
-    from: debt.from,
-    fromName: userMap[debt.from]?.name || debt.from,
-    to: debt.to,
-    toName: userMap[debt.to]?.name || debt.to,
-    amount: debt.amount,
-    expenseId: debt.expenseId
-  }));
+  // Net debts between each pair so opposite directions collapse into one row.
+  const pairNetMap = {};
+  debts.forEach((debt) => {
+    const [left, right] = [debt.from, debt.to].sort();
+    const key = `${left}:${right}`;
+    const signedAmount = debt.from === left ? debt.amount : -debt.amount;
+    pairNetMap[key] = (pairNetMap[key] || 0) + signedAmount;
+  });
+
+  const enrichedDebts = Object.entries(pairNetMap).map(([key, netAmount]) => {
+    const [left, right] = key.split(':');
+    const roundedNet = Math.round(netAmount * 100) / 100;
+    if (roundedNet === 0) return null;
+
+    const from = roundedNet > 0 ? left : right;
+    const to = roundedNet > 0 ? right : left;
+
+    return {
+      from,
+      fromName: userMap[from]?.name || from,
+      to,
+      toName: userMap[to]?.name || to,
+      amount: Math.abs(roundedNet)
+    };
+  }).filter(Boolean).sort((a, b) => {
+    if (b.amount !== a.amount) return b.amount - a.amount;
+    return `${a.fromName}->${a.toName}`.localeCompare(`${b.fromName}->${b.toName}`);
+  });
 
   return { summaries: summaryArray, debts: enrichedDebts };
 };
