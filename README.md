@@ -108,10 +108,3 @@ cd frontend
 npm test
 ```
 
-## Notes
-
-- If ports `4000` or `4200` are already in use, change `PORT` in `backend/.env` or the Angular dev server port.
-- If you run backend in Docker, set `DB_HOST=db` (the service name) in the backend env.
-- Keep `backend/.env` out of source control — it contains secrets.
-
-If you want, I can add a ready-to-run `docker-compose` variant that includes the backend container. 
